@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Three.js Fundamentals</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    <script type="module">
+
+        import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r120/three.module.js';
+
+        const canvas = document.querySelector('#c');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, });
+        renderer.setPixelRatio(3 * window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+
+        const fov = 75;
+        const aspect = 2;  // the canvas default
+        const near = 0.1;
+        const far = 50;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.z = 5;
+
+        const scene = new THREE.Scene();
+
+
+
+        const hemlight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+        scene.add(hemlight);
+
+        const light = new THREE.PointLight(0xffffff, -1, 100);
+
+        //Set up shadow properties for the light
+        light.shadow.mapSize.width = 512; // default
+        light.shadow.mapSize.height = 512; // default
+        light.shadow.camera.near = 0.5; // default
+        light.shadow.camera.far = 500; // default
+
+        scene.add(light);
+
+        const planeGeometry = new THREE.PlaneGeometry(20, 20, 32, 32);
+        const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff })
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.position.z = 10;
+        plane.receiveShadow = true;
+        scene.add(plane);
+
+        const boxWidth = 1;
+        const boxHeight = 1;
+        const boxDepth = 1;
+        const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+        const material = new THREE.MeshStandardMaterial({ color: 0x44aa88 });
+
+        const cube = new THREE.Mesh(geometry, material);
+        cube.castShadow = true; //default is false
+        cube.receiveShadow = false; //default
+        scene.add(cube);
+        //const loader = new THREE.MTLLoader();
+
+
+        const render = () => {
+            requestAnimationFrame(render);
+            //update some properties here
+
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+
+        }
+
+        render();
+
+    </script>
+</body>
+
+</html>
